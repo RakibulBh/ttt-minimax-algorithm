@@ -2,22 +2,39 @@
 import Grid from "@/components/grid";
 import { useState } from "react";
 
-const grid = [
-  [".", ".", "."],
-  [".", ".", "."],
-  [".", ".", "."],
-];
-
 export default function Home() {
+  const [grid, setGrid] = useState([
+    [".", ".", "."],
+    [".", ".", "."],
+    [".", ".", "."],
+  ]);
+  const [placed, setPlaced] = useState(0);
   const [turn, setTurn] = useState<Boolean>(true);
 
+  // Move functions inside
+  const resetGrid = () => {
+    setGrid([
+      [".", ".", "."],
+      [".", ".", "."],
+      [".", ".", "."],
+    ]);
+    setPlaced(0);
+  };
+
   const changeVal = (r: number, c: number) => {
-    const newVal = turn ? "X" : "O";
-    if (grid[r][c] === ".") {
-      grid[r][c] = newVal;
+    if (placed === 9) {
+      alert("Someone won!");
+      resetGrid();
+      return;
+    }
+    const newGrid = grid.map((row) => [...row]);
+
+    if (newGrid[r][c] === ".") {
+      newGrid[r][c] = turn ? "X" : "O";
+      setGrid(newGrid);
+      setPlaced(placed + 1);
       setTurn(!turn);
     }
-    return;
   };
 
   return (
