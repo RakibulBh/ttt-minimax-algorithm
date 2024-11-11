@@ -1,6 +1,7 @@
 "use client";
 import Grid from "@/components/grid";
 import { useState } from "react";
+import { getBestMove } from "./actions";
 
 export default function Home() {
   const [grid, setGrid] = useState([
@@ -8,8 +9,6 @@ export default function Home() {
     [".", ".", "."],
     [".", ".", "."],
   ]);
-  const [placed, setPlaced] = useState(0);
-  const [turn, setTurn] = useState<Boolean>(true);
 
   // Move functions inside
   const resetGrid = () => {
@@ -18,23 +17,23 @@ export default function Home() {
       [".", ".", "."],
       [".", ".", "."],
     ]);
-    setPlaced(0);
   };
 
-  const changeVal = (r: number, c: number) => {
-    if (placed === 9) {
-      alert("Someone won!");
-      resetGrid();
-      return;
-    }
-    const newGrid = grid.map((row) => [...row]);
-
-    if (newGrid[r][c] === ".") {
-      newGrid[r][c] = turn ? "X" : "O";
+  const changeVal = async (r: number, c: number) => {
+    if (grid[r][c] === ".") {
+      const newGrid = grid.map((row) => [...row]);
+      newGrid[r][c] = "X";
       setGrid(newGrid);
-      setPlaced(placed + 1);
-      setTurn(!turn);
+
+      await handleComputerMove(newGrid);
     }
+  };
+
+  const handleComputerMove = async (newGrid: string[][]) => {
+    const [r_c, c_c] = await getBestMove({ board: newGrid });
+    const computerGrid = newGrid.map((row) => [...row]);
+    computerGrid[r_c][c_c] = "O";
+    setGrid(computerGrid);
   };
 
   return (
